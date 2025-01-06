@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>사주·해운·이름풀이 - 해운값 해석</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f2f2f2;
+      margin: 0; 
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    h1 { margin-top:0; }
+    .input-area {
+      background: #fafafa;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .input-area label {
+      display: inline-block;
+      width: 120px;
+      font-weight: bold;
+    }
+    .input-area input {
+      width: 100px;
+      margin-bottom: 6px;
+      padding: 4px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    #resultSection { 
+      display:none; 
+      margin-top:20px; 
+    }
+    table {
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 10px;
+    }
+    table th, table td {
+      border: 1px solid #ccc; 
+      padding: 6px;
+      text-align: center;
+      vertical-align: top;
+    }
+    .red { 
+      color: red; 
+      font-weight: bold; 
+    }
+    .interpret-box {
+      margin-top: 15px; 
+      padding: 10px; 
+      background: #fff; 
+      border: 1px solid #ddd; 
+      border-radius: 6px;
+    }
+    .interpret-box h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+      font-size: 1.05em;
+    }
+    .interpret-text {
+      white-space: pre-wrap;
+      line-height: 1.5; 
+      font-size: 1em; 
+      color: #333;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    .name-table {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <h1>수비학 풀이</h1>
+  <p>수비학과 타로로 당신의 운명을 예측합니다. <strong>사주풀이</strong> 해석을 보여주고,<br>
+     올해운세를 알려주고 이름이 갖는 풀이도 알려 드립니다.</p>
+
+  <div class="input-area">
+    <h2>양력 날짜</h2>
+    <label>연(YYYY)</label><input type="number" id="solarYear"><br>
+    <label>월(M)</label><input type="number" id="solarMonth"><br>
+    <label>일(D)</label><input type="number" id="solarDay"><br>
+  </div>
+
+  <div class="input-area">
+    <h2>음력 날짜</h2>
+    <label>연(YYYY)</label><input type="number" id="lunarYear"><br>
+    <label>월(M)</label><input type="number" id="lunarMonth"><br>
+    <label>일(D)</label><input type="number" id="lunarDay"><br>
+  </div>
+
+  <div class="input-area">
+    <h2>올해운 년도 & 이름</h2>
+    <label>해운연도</label><input type="number" id="haeunYear"><br>
+    <label>이름</label><input type="text" id="userName">
+  </div>
+
+  <!-- 버튼에서 onclick="calculateAll()" 함수를 호출하므로, JS 파일 내에 해당 함수가 정의되어 있어야 합니다. -->
+  <button onclick="calculateAll()">계산하기</button>
+
+  <div id="resultSection">
+    <h2>결과</h2>
+
+    <!-- 1) 양력 사주 -->
+    <div id="solarSajuDiv" style="display:none;">
+      <h3>양력 사주값</h3>
+      <table id="solarSajuTable"></table>
+      <!-- 해석(양력) firstVal -->
+      <div class="interpret-box" id="solarInterpretBoxFirst" style="display:none;">
+        <h3>양력 사주풀이 (첫번째 값)</h3>
+        <div class="interpret-text" id="solarInterpretTextFirst"></div>
+      </div>
+      <!-- 해석(양력) secondVal -->
+      <div class="interpret-box" id="solarInterpretBoxSecond" style="display:none;">
+        <h3>양력 사주풀이 (두번째 값)</h3>
+        <div class="interpret-text" id="solarInterpretTextSecond"></div>
+      </div>
+    </div>
+
+    <!-- 2) 음력 사주 -->
+    <div id="lunarSajuDiv" style="display:none;">
+      <h3>음력 사주값</h3>
+      <table id="lunarSajuTable"></table>
+      <!-- 해석(음력) firstVal -->
+      <div class="interpret-box" id="lunarInterpretBoxFirst" style="display:none;">
+        <h3>음력 사주풀이 (첫번째 값)</h3>
+        <div class="interpret-text" id="lunarInterpretTextFirst"></div>
+      </div>
+      <!-- 해석(음력) secondVal -->
+      <div class="interpret-box" id="lunarInterpretBoxSecond" style="display:none;">
+        <h3>음력 사주풀이 (두번째 값)</h3>
+        <div class="interpret-text" id="lunarInterpretTextSecond"></div>
+      </div>
+    </div>
+
+    <!-- 해운(양력) -->
+    <div id="solarHaeunDiv" style="display:none;">
+      <h3>해운값 (양력)</h3>
+      <table id="solarHaeunTable"></table>
+      <!-- 해운 해석(양력) -->
+      <div class="interpret-box" id="solarHaeunInterpretBox" style="display:none;">
+        <h3>양력 해운풀이</h3>
+        <div class="interpret-text" id="solarHaeunInterpretText"></div>
+      </div>
+    </div>
+
+    <!-- 해운(음력) -->
+    <div id="lunarHaeunDiv" style="display:none;">
+      <h3>해운값 (음력)</h3>
+      <table id="lunarHaeunTable"></table>
+      <!-- 해운 해석(음력) -->
+      <div class="interpret-box" id="lunarHaeunInterpretBox" style="display:none;">
+        <h3>음력 해운풀이</h3>
+        <div class="interpret-text" id="lunarHaeunInterpretText"></div>
+      </div>
+    </div>
+
+    <!-- 이름풀이 -->
+    <div id="nameDiv" style="display:none;">
+      <h3>이름풀이(글자별)</h3>
+      <table id="nameTable" class="name-table"></table>
+    </div>
+  </div>
+</div>
+
+<!-- 분리된 스크립트 파일 불러오기 -->
+<script src="script.js"></script>
+
+</body>
+</html>
